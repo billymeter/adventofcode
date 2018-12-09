@@ -25,13 +25,24 @@ def claim_fabric(claims):
 
 def find_overlap(fabric):
     overlap = [x for x in fabric.values() if len(x) > 1]
-    return len(overlap)
-
+    return overlap
 
 def part1(inp):
-    fabric = claim_fabric(claims)
-    return find_overlap(fabric)
+    return len(find_overlap(inp))
+
+def part2(fabric, claims):
+    overlap = find_overlap(fabric)
+    all_ids = set({})
+    bad_ids = set({})
+    for ids in overlap:
+        for id in ids:
+            bad_ids.add(id)
+    for claim in claims:
+        all_ids.add(claim[0])
+    return all_ids - bad_ids
 
 if __name__ == "__main__":
     claims = get_lines("input")
-    print(part1(claims))
+    fabric = claim_fabric(claims)
+    print(part1(fabric))
+    print(part2(fabric, claims))
