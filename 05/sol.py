@@ -1,33 +1,44 @@
 #!/usr/bin/env python3
 
+import re
+import string
+
+lower_upper = "aA|bB|cC|dD|eE|fF|gG|hH|iI|jJ|kK|lL|mM|nN|oO|pP|qQ|rR|sS|tT|uU|vV|wW|xX|yY|zZ"
+upper_lower = "Aa|Bb|Cc|Dd|Ee|Ff|Gg|Hh|Ii|Jj|Kk|Ll|Mm|Nn|Oo|Pp|Qq|Rr|Ss|Tt|Uu|Vv|Ww|Xx|Yy|Zz"
+
 def get_input(fname):
     with open(fname) as f:
         return f.read()
 
+def react(inp):
+    done = False
+    start = inp
+    while not done:
+        test = re.sub(upper_lower, '', start)
+        test = re.sub(lower_upper, '', test)
+        if start == test:
+            done = True
+        else:
+            start = test
+    return test
+
 
 def part1(inp):
-    polymer = list(inp)
-    new = polymer
-    done = False
+    return len(react(inp))
 
-    while not done:
-        polymer = new
-        new = []
-        it = iter(polymer)
-        for c in it:
-            try:
-                c2 = next(it)
-                if abs(ord(c) - ord(c2)) == 0x20:
-                    continue
-                else:
-                    new.append(c)
-                    new.append(c2)
-            except:
-                new.append(c)
+def part2(inp):
+    shortest = part1(inp)
+    test = inp
+    for c in string.ascii_lowercase:
+        test = re.sub(c, '', test)
+        test = re.sub(c.upper(), '', test)
+        test = react(test)
+        if len(test) < shortest: shortest = len(test)
+        test = inp
+    return shortest
 
-        done = True if new == polymer else False
-    return ''.join(new)
 
 if __name__ == "__main__":
-    inp = get_input("input")
+    inp = get_input("input").strip()
     print(part1(inp))
+    print(part2(inp))
