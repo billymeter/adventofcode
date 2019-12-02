@@ -14,6 +14,8 @@ func main() {
 	fmt.Println("Advent of Code 2019 Day 2")
 	p1 := runProgram(12, 2, input)
 	fmt.Println("Part One", p1)
+
+	input = readInput("input.txt")
 	p2 := partTwo(input)
 	fmt.Println("Part Two:", p2)
 }
@@ -41,12 +43,11 @@ func partTwo(nums []int) int {
 			}
 		}
 	}
-
-	return 100 * noun * verb
+	return 100*noun + verb
 }
 
 func processOpcode(ip int, data []int) bool {
-	if ip > len(data) {
+	if ip > len(data) || data[ip] > len(data) {
 		return false
 	}
 	switch data[ip] {
