@@ -12,7 +12,7 @@ func main() {
 	fmt.Println("Advent of Code 2015 Day 5")
 	p1 := partOne(input)
 	fmt.Println("Part One:", p1)
-	input = []string{"qjhvhtzxzqqjkmpb", "xxyxx", "uurcxstgmygtbstg", "ieodomkazucvgmuy"}
+
 	p2 := partTwo(input)
 	fmt.Println("Part Two:", p2)
 }
@@ -31,7 +31,6 @@ func partTwo(input []string) int {
 	niceStrings := 0
 	for _, s := range input {
 		if isNice2(s) {
-			fmt.Println(s, "is nice")
 			niceStrings++
 		}
 	}
@@ -44,17 +43,19 @@ func isNice2(s string) bool {
 
 func hasPairOfRepeats(s string) bool {
 	pairs := make(map[string]int)
-	for i := 0; i < len(s)-2; i++ {
-		if s[i] == s[i+1] && s[i] == s[i+2] {
-			return false
+	for i := 0; i < len(s)-1; i++ {
+		if i == len(s)-2 {
+			if s[i] == s[i+1] {
+				pairs[s[i:i+2]]++
+			}
+		} else {
+			pairs[s[i:i+2]]++
 		}
-		pairs[s[i:i+2]]++
+
 	}
 
 	for k := range pairs {
-		fmt.Println(k)
 		if pairs[k] > 1 {
-			fmt.Println(s, "has repeating pair:", k)
 			return true
 		}
 	}
