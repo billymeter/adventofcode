@@ -32,16 +32,11 @@ func partOne(lower, upper int) int {
 
 func partTwo(lower, upper int) int {
 	count := 0
-	// for i := lower; i <= upper; i++ {
-	// 	num := intStringToIntSlice(strconv.Itoa(i))
-	// 	if hasDigitsNeverDecreaseLeftToRight(num) && hasTwoSameAdjacentDigits(num) {
-	// 		count++
-	// 	}
-	// }
-	tests := [][]int{[]int{1, 1, 2, 2, 3, 3}, []int{1, 2, 3, 4, 4, 4}, []int{1, 1, 1, 1, 3, 3}}
-	for _, t := range tests {
-		fmt.Println(t, "returns ", hasTwoAdjacentDigitsNotPartOfLargerGroup(t))
-		// hasTwoAdjacentDigitsNotPartOfLargerGroup(t)
+	for i := lower; i <= upper; i++ {
+		num := intStringToIntSlice(strconv.Itoa(i))
+		if hasDigitsNeverDecreaseLeftToRight(num) && hasTwoSameAdjacentDigits(num) && hasTwoAdjacentDigitsNotPartOfLargerGroup(num) {
+			count++
+		}
 	}
 
 	return count
@@ -52,11 +47,9 @@ func hasTwoAdjacentDigitsNotPartOfLargerGroup(num []int) bool {
 	streak := 1
 	lastDigit := num[0]
 	for i, d := range num {
-
 		if i == 0 {
 			continue
 		}
-		fmt.Println("i:", i, "; d:", d)
 		if lastDigit == d {
 			streak++
 		} else {
@@ -64,8 +57,11 @@ func hasTwoAdjacentDigitsNotPartOfLargerGroup(num []int) bool {
 			streak = 1
 		}
 		lastDigit = d
+		if i == 5 && streak > 1 {
+			groups[streak] = true
+		}
 	}
-	fmt.Println(num, ":", groups)
+
 	if groups[2] {
 		return true
 	}
