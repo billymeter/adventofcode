@@ -87,14 +87,16 @@ func processOpcode(mem []int) (int, error) {
 		// jump-if-true
 		if op1 != 0 {
 			ip = op2
+			return 0, nil
 		}
-		return 0, nil
+		return 3, nil
 	case 6:
 		// jump-if-false
 		if op1 == 0 {
 			ip = op2
+			return 0, nil
 		}
-		return 0, nil
+		return 3, nil
 	case 7:
 		// less than
 		if op1 < op2 {
