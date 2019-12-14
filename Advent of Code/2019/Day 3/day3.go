@@ -22,7 +22,6 @@ type operation struct {
 
 func main() {
 	input := readInput("input.txt")
-	// input := readInput("test.txt")
 
 	fmt.Println("Advent of Code 2019 Day 3")
 	p1 := partOne(input)
