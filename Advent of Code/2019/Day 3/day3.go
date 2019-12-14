@@ -21,13 +21,18 @@ type operation struct {
 }
 
 func main() {
-	// input := readInput("input.txt")
-	input := readInput("test.txt")
+	input := readInput("input.txt")
 
+	fmt.Println("Advent of Code 2019 Day 3")
+	p1 := partOne(input)
+	fmt.Println("Part One:", p1)
+
+}
+
+func partOne(input [][]operation) int {
 	cursor := point{0, 0}
-	grid := make(map[point]int)
+	grid := make(map[point]map[int]bool)
 	for i, l := range input {
-		fmt.Println(l)
 		for _, o := range l {
 			cursor = drawLine(o, cursor, i, grid)
 		}
@@ -36,67 +41,68 @@ func main() {
 
 	intersections := findIntersections(grid)
 
-	fmt.Println("intersections:", intersections)
-
 	var distances []int
 	for _, i := range intersections {
 		distances = append(distances, calculateManhattanDistance(i))
 	}
 	sort.Ints(distances)
-	fmt.Println(distances)
+	return distances[0]
 }
 
 func calculateManhattanDistance(p point) int {
 	centralPort := point{0, 0}
-	val := (p.x - centralPort.x) + (p.y - centralPort.y)
-	if val < 0 {
-		val *= -1
-	}
-	return val
+	x := abs(p.x - centralPort.x)
+	y := abs(p.y - centralPort.y)
+	return x + y
 }
 
-func findIntersections(grid map[point]int) []point {
+func findIntersections(grid map[point]map[int]bool) []point {
 	var candidates []point
-	for k, v := range grid {
-		if v > 2 {
-			// if v&3 == 3 {
-			fmt.Println(k, "has a value of", v)
+	for k := range grid {
+		if grid[k][1] && grid[k][2] {
 			candidates = append(candidates, k)
 		}
 	}
 	return candidates
 }
 
-func drawLine(o operation, start point, wire int, grid map[point]int) point {
-	// 0 for no wire in path, 1 for one wire, and 11 for two wires
+func drawLine(o operation, start point, wire int, grid map[point]map[int]bool) point {
 	shift := 1 << wire
 	switch o.direction {
 	case 'U':
-		for y := 1; y < o.magnitude; y++ {
+		for y := 1; y <= o.magnitude; y++ {
 			p := point{start.x, start.y + y}
-			fmt.Println("Point", p, "marked for wire", wire+1)
-			grid[p] |= shift
+			if grid[p] == nil {
+				grid[p] = make(map[int]bool)
+			}
+			grid[p][shift] = true
 		}
 		return point{start.x, start.y + o.magnitude}
 	case 'D':
-		for y := 1; y < o.magnitude; y++ {
+		for y := 1; y <= o.magnitude; y++ {
 			p := point{start.x, start.y - y}
-			fmt.Println("Point", p, "marked for wire", wire+1)
-			grid[p] |= shift
+			if grid[p] == nil {
+				grid[p] = make(map[int]bool)
+			}
+			grid[p][shift] = true
 		}
 		return point{start.x, start.y - o.magnitude}
 	case 'R':
-		for x := 1; x < o.magnitude; x++ {
+		for x := 1; x <= o.magnitude; x++ {
 			p := point{start.x + x, start.y}
-			fmt.Println("Point", p, "marked for wire", wire+1)
-			grid[p] |= shift
+			if grid[p] == nil {
+				grid[p] = make(map[int]bool)
+			}
+			grid[p][shift] = true
 		}
 		return point{start.x + o.magnitude, start.y}
 	case 'L':
-		for x := 1; x < o.magnitude; x++ {
+		for x := 1; x <= o.magnitude; x++ {
 			p := point{start.x - x, start.y}
-			fmt.Println("Point", p, "marked for wire", wire+1)
-			grid[p] |= shift
+			if grid[p] == nil {
+				grid[p] = make(map[int]bool)
+			}
+			grid[p][shift] = true
 		}
 		return point{start.x - o.magnitude, start.y}
 	}
@@ -129,4 +135,11 @@ func readInput(filename string) [][]operation {
 	}
 
 	return ops
+}
+
+func abs(a int) int {
+	if a < 0 {
+		return a * -1
+	}
+	return a
 }
