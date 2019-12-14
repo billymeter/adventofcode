@@ -22,19 +22,23 @@ type operation struct {
 
 func main() {
 	input := readInput("input.txt")
+	// input := readInput("test.txt")
 
 	fmt.Println("Advent of Code 2019 Day 3")
 	p1 := partOne(input)
 	fmt.Println("Part One:", p1)
-
+	p2 := partTwo(input)
+	fmt.Println("Part Two:", p2)
 }
 
 func partOne(input [][]operation) int {
 	cursor := point{0, 0}
-	grid := make(map[point]map[int]bool)
+	grid := make(map[point]map[int]int)
 	for i, l := range input {
+		count := 0
 		for _, o := range l {
-			cursor = drawLine(o, cursor, i, grid)
+			cursor = drawLine(o, cursor, i, count, grid)
+			count += o.magnitude
 		}
 		cursor = point{0, 0}
 	}
@@ -45,8 +49,35 @@ func partOne(input [][]operation) int {
 	for _, i := range intersections {
 		distances = append(distances, calculateManhattanDistance(i))
 	}
+
 	sort.Ints(distances)
 	return distances[0]
+}
+
+func partTwo(input [][]operation) int {
+	cursor := point{0, 0}
+	grid := make(map[point]map[int]int)
+	for i, l := range input {
+		count := 0
+		for _, o := range l {
+			cursor = drawLine(o, cursor, i, count, grid)
+			count += o.magnitude
+		}
+		cursor = point{0, 0}
+	}
+
+	intersections := findIntersections(grid)
+	return findMinLengthAtIntersection(intersections, grid)
+}
+
+func findMinLengthAtIntersection(points []point, grid map[point]map[int]int) int {
+	min := grid[points[0]][1] + grid[points[0]][2]
+	for _, p := range points {
+		if min > grid[p][1]+grid[p][2] {
+			min = grid[p][1] + grid[p][2]
+		}
+	}
+	return min
 }
 
 func calculateManhattanDistance(p point) int {
@@ -56,53 +87,65 @@ func calculateManhattanDistance(p point) int {
 	return x + y
 }
 
-func findIntersections(grid map[point]map[int]bool) []point {
+func findIntersections(grid map[point]map[int]int) []point {
 	var candidates []point
 	for k := range grid {
-		if grid[k][1] && grid[k][2] {
+		if grid[k][1] > 0 && grid[k][2] > 0 {
 			candidates = append(candidates, k)
 		}
 	}
 	return candidates
 }
 
-func drawLine(o operation, start point, wire int, grid map[point]map[int]bool) point {
+func drawLine(o operation, start point, wire, count int, grid map[point]map[int]int) point {
 	shift := 1 << wire
 	switch o.direction {
 	case 'U':
 		for y := 1; y <= o.magnitude; y++ {
+			count++
 			p := point{start.x, start.y + y}
 			if grid[p] == nil {
-				grid[p] = make(map[int]bool)
+				grid[p] = make(map[int]int)
 			}
-			grid[p][shift] = true
+			if grid[p][shift] == 0 {
+				grid[p][shift] = count
+			}
 		}
 		return point{start.x, start.y + o.magnitude}
 	case 'D':
 		for y := 1; y <= o.magnitude; y++ {
+			count++
 			p := point{start.x, start.y - y}
 			if grid[p] == nil {
-				grid[p] = make(map[int]bool)
+				grid[p] = make(map[int]int)
 			}
-			grid[p][shift] = true
+			if grid[p][shift] == 0 {
+				grid[p][shift] = count
+			}
 		}
 		return point{start.x, start.y - o.magnitude}
 	case 'R':
 		for x := 1; x <= o.magnitude; x++ {
+			count++
 			p := point{start.x + x, start.y}
 			if grid[p] == nil {
-				grid[p] = make(map[int]bool)
+				grid[p] = make(map[int]int)
 			}
-			grid[p][shift] = true
+			if grid[p][shift] == 0 {
+				grid[p][shift] = count
+			}
 		}
 		return point{start.x + o.magnitude, start.y}
 	case 'L':
 		for x := 1; x <= o.magnitude; x++ {
+			count++
 			p := point{start.x - x, start.y}
 			if grid[p] == nil {
-				grid[p] = make(map[int]bool)
+				grid[p] = make(map[int]int)
 			}
-			grid[p][shift] = true
+			if grid[p][shift] == 0 {
+				grid[p][shift] = count
+			}
 		}
 		return point{start.x - o.magnitude, start.y}
 	}
