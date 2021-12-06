@@ -30,8 +30,44 @@ def day1():
 
 
 def day2():
-    pass
+    nums = data
+    for pos in range(len(nums[0])):
+        ones = []
+        zeros = []
+        for line in range(len(nums)):
+            if '1' in nums[line][pos]:
+                ones.append(nums[line])
+            else:
+                zeros.append(nums[line])
+        if len(ones) > len(zeros) or len(ones) == len(zeros):
+            nums = ones
+        else:
+            nums = zeros
+
+        if len(nums) == 1:
+            break
+    oxygen = int(''.join(nums), 2)
+
+    nums = data
+    for pos in range(len(nums[0])):
+        ones = []
+        zeros = []
+        for line in range(len(nums)):
+            if '1' in nums[line][pos]:
+                ones.append(nums[line])
+            else:
+                zeros.append(nums[line])
+        if len(ones) > len(zeros) or len(ones) == len(zeros):
+            nums = zeros
+        else:
+            nums = ones
+
+        if len(nums) == 1:
+            break
+    co2 = int(''.join(nums), 2)
+
+    return (oxygen * co2)
 
 
 print(day1())
-# print(day2())
+print(day2())
