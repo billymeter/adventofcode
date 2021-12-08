@@ -4,10 +4,16 @@ from functools import reduce
 import operator
 
 
+with open('input4.txt') as f:
+    data = f.read()
+
+
 class Board:
     def __init__(self, lines):
         self.board = [[*map(int, x.split('\n')[0].split())]
                       for x in lines.split('\n')]
+        if self.board[-1] == []:
+            self.board = self.board[:-1]
         self.numbers = []
         self.i = 0
         pass
@@ -40,7 +46,11 @@ class Board:
 
         # transpose the board to easily check
         # the vertical lines
-        self.board = [[row[i] for row in self.board] for i in range(5)]
+        try:
+            self.board = [[row[i] for row in self.board] for i in range(5)]
+        except:
+            print('problem boi:')
+            print(self.board)
 
         for line in self.board:
             wins = 0
@@ -71,10 +81,6 @@ def build_boards(data):
     return numbers, boards
 
 
-with open('input4_sample.txt') as f:
-    data = f.read()
-
-
 def day1():
     numbers, boards = build_boards(data)
     for num in numbers:
@@ -84,9 +90,10 @@ def day1():
             if win:
                 # get all the lines that are not the winning line
                 d = [x for x in board if x != win]
-                # flatten the list and get its sum
-                sum = reduce(operator.add, [
-                             x for sublist in d for x in sublist])
+                # flatten the list and remove any marked numbers
+                flattened = [
+                    x for sublist in d for x in sublist if x not in board.numbers]
+                sum = reduce(operator.add, flattened)
                 return sum * num
 
 
