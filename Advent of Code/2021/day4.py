@@ -97,4 +97,42 @@ def day1():
                 return sum * num
 
 
+def day2():
+    # def find_winning_board(boards, nums):
+    #     for num in numbers:
+    #         for board in boards:
+    #             board.mark_number(num)
+    #             win = board.check_for_win()
+    #             if win:
+    #                 return board, num
+
+    numbers, boards = build_boards(data)
+    while True:
+        if len(numbers) > 1:
+            num = numbers.pop(0)
+            to_remove = None
+            for board in boards:
+                board.mark_number(num)
+                if board.check_for_win():
+                    to_remove = board
+                    break
+
+            if to_remove:
+                print(f'removing {to_remove}')
+                boards.remove(to_remove)
+
+            if len(boards) == 1:
+                # this one should win:
+                # [[[69, 51, 39, 95, 98], [90, 61, 91, 6, 21], [25, 57, 81, 10, 49], [67, 55, 43, 96, 17], [78, 11, 3, 64, 77]]]
+                print(boards)
+                flatten = [x for sl in boards[0] for x in sl]
+                sum = reduce(operator.add, flatten)
+                return sum * num
+        else:
+            print(f'exhausted numbers. here are my boards: {boards}')
+            print(f'{num}')
+            return
+
+
 print(day1())
+print(day2())
