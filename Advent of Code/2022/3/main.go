@@ -8,12 +8,10 @@ import (
 	"unicode"
 )
 
-type Elves int
-
 const (
-	ElfOne   Elves = 1
-	ElfTwo         = 2
-	ElfThree       = 4
+	ElfOne   int = 1
+	ElfTwo       = 2
+	ElfThree     = 4
 )
 
 func readInput(filename string) []string {
@@ -64,17 +62,17 @@ func day3p2(rucksackContents []string) int {
 	for i := 0; i < len(rucksackContents)-3; i += 3 {
 		itemsInPacks := make(map[rune]int)
 		for _, item := range rucksackContents[i] {
-			itemsInPacks[item] |= int(ElfOne)
+			itemsInPacks[item] |= ElfOne
 		}
 		for _, item := range rucksackContents[i+1] {
-			itemsInPacks[item] |= int(ElfTwo)
+			itemsInPacks[item] |= ElfTwo
 		}
 		for _, item := range rucksackContents[i+2] {
-			itemsInPacks[item] |= int(ElfThree)
+			itemsInPacks[item] |= ElfThree
 		}
 
 		for item := range itemsInPacks {
-			if itemsInPacks[item] == int(ElfOne|ElfTwo|ElfThree) {
+			if itemsInPacks[item] == ElfOne|ElfTwo|ElfThree {
 				sum += getItemPriority(item)
 			}
 		}
