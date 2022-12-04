@@ -57,9 +57,13 @@ func day4p2(elf1, elf2 []Range) int {
 	for i := range elf1 {
 		if (elf2[i].start <= elf1[i].end && elf2[i].start >= elf1[i].start) ||
 			(elf2[i].end >= elf1[i].start && elf2[i].end <= elf1[i].end) {
+			// elf2 start is within the elf1 interval
+			// or elf2 end is within the elf1 interval
 			overlapped++
 		} else if (elf1[i].start <= elf2[i].end && elf1[i].start >= elf2[i].start) ||
 			(elf1[i].end >= elf2[i].start && elf1[i].end <= elf2[i].end) {
+			// elf1 start is within the elf2 interval
+			// elf1 end is within the elf2 interval
 			overlapped++
 		}
 	}
