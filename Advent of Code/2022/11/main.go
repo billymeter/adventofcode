@@ -80,24 +80,47 @@ func parseNotesToMonkies(lines []string) []*Monkey {
 }
 
 func runRound(monkies []*Monkey, divide bool) {
+	divisor := 1
+	for _, m := range monkies {
+		// this is needed to get a ring of integers modulo Pi_i d_i.
+		// that is, the product of all the tests of each monkey
+		divisor *= m.test
+	}
+
 	for _, m := range monkies {
 		for idx := range m.items {
-			if m.operation == Add {
-				if m.operationAmount < 0 {
-					m.items[idx] += m.items[idx]
-				} else {
-					m.items[idx] += m.operationAmount
-				}
-			} else {
-				if m.operationAmount < 0 {
-					m.items[idx] *= m.items[idx]
-				} else {
-					m.items[idx] *= m.operationAmount
-				}
-			}
-
 			if divide {
+				if m.operation == Add {
+					if m.operationAmount < 0 {
+						m.items[idx] += m.items[idx]
+					} else {
+						m.items[idx] += m.operationAmount
+					}
+				} else {
+					if m.operationAmount < 0 {
+						m.items[idx] *= m.items[idx]
+					} else {
+						m.items[idx] *= m.operationAmount
+					}
+				}
+
 				m.items[idx] /= 3
+
+			} else {
+
+				if m.operation == Add {
+					if m.operationAmount < 0 {
+						m.items[idx] += m.items[idx]
+					} else {
+						m.items[idx] += m.operationAmount
+					}
+				} else {
+					if m.operationAmount < 0 {
+						m.items[idx] = (m.items[idx] * m.items[idx]) % divisor
+					} else {
+						m.items[idx] = (m.items[idx] * m.operationAmount) % divisor
+					}
+				}
 			}
 
 			if m.items[idx]%m.test == 0 {
@@ -113,7 +136,7 @@ func runRound(monkies []*Monkey, divide bool) {
 }
 
 func day11p1() {
-	input := readInput("test")
+	input := readInput("input")
 	monkies := parseNotesToMonkies(input)
 
 	for i := 0; i < 20; i++ {
@@ -140,7 +163,7 @@ func day11p1() {
 }
 
 func day11p2() {
-	input := readInput("test")
+	input := readInput("input")
 	monkies := parseNotesToMonkies(input)
 
 	for i := 0; i < 10000; i++ {
