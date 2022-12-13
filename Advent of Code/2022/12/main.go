@@ -13,9 +13,8 @@ type Node struct {
 }
 
 type Edge struct {
-	start  Node
-	end    Node
-	weight int
+	start Node
+	end   Node
 }
 
 type SuckyEdge struct {
@@ -101,14 +100,10 @@ func inputToGraph(lines []string) (graph map[Node][]Edge, start, end Node) {
 		var _edges []Edge
 		for _, e := range edges {
 			elevation := mapping[e.end].elevation - mapping[e.start].elevation
-			// if elevation == 0 || elevation == 1 || elevation == -1 {
-			// 	_edge := Edge{mapping[e.start], mapping[e.end], elevation}
-			// 	_edges = append(_edges, _edge)
-			// }
-			elevation += mapping[e.start].elevation
-			elevation = 1
-			_edge := Edge{mapping[e.start], mapping[e.end], elevation}
-			_edges = append(_edges, _edge)
+			if elevation <= 0 || elevation == 1 {
+				_edge := Edge{mapping[e.start], mapping[e.end]}
+				_edges = append(_edges, _edge)
+			}
 		}
 		graph[node] = _edges
 	}
@@ -119,51 +114,54 @@ func inputToGraph(lines []string) (graph map[Node][]Edge, start, end Node) {
 	return graph, start, end
 }
 
-func dijkstra(graph map[Node][]Edge, start, target Node) (path []Node) {
+func bfs(graph map[Node][]Edge, start Node) map[Node]int {
 	q := list.New()
 	dist := make(map[Node]int)
-	prev := make(map[Node]Node)
-
 	for n := range graph {
 		dist[n] = 999999999999999999
-		q.PushBack(n)
 	}
 
 	dist[start] = 0
-
-	for n := q.Front(); n != nil; n = q.Front() {
-		q.Remove(n)
-		node := Node(n.Value.(Node))
-
-		for _, e := range graph[node] {
-			neighbor := e.end
-			val := dist[node] + e.weight
-			if val < dist[neighbor] {
-				dist[neighbor] = val
-				prev[neighbor] = node
+	q.PushBack(start)
+	for node := q.Front(); node != nil; node = q.Front() {
+		n := node.Value.(Node)
+		q.Remove(node)
+		for _, e := range graph[n] {
+			if dist[e.end] == 999999999999999999 {
+				q.PushBack(e.end)
+				dist[e.end] = dist[n] + 1
 			}
 		}
 	}
 
-	fmt.Printf("%v\n\n", dist)
-	fmt.Printf("%v\n", prev)
-	return path
+	return dist
 }
 
 func day12p1() {
-	input := readInput("test")
+	input := readInput("input")
 	graph, start, end := inputToGraph(input)
 
-	// fmt.Printf("start: %v, end: %v\n", start, end)
-	dijkstra(graph, start, end)
-	// for n := range graph {
-	// 	fmt.Printf("%v: %v\n", n, graph[n])
-	// }
+	dist := bfs(graph, start)
+	fmt.Printf("%d\n", dist[end])
 }
 
 func day12p2() {
-	// input := readInput("test")
-	// fmt.Printf("%v\n", input)
+	// this is not efficient
+	// something like Floyd-Warshall might be better, but I'm not implementing
+	// another graph algo
+	input := readInput("input")
+	graph, _, end := inputToGraph(input)
+
+	min := 999999999999999999
+	for n := range graph {
+		if n.elevation == 0 {
+			dist := bfs(graph, n)
+			if dist[end] < min {
+				min = dist[end]
+			}
+		}
+	}
+	fmt.Printf("%d\n", min)
 }
 
 func main() {
